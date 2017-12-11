@@ -13,21 +13,22 @@ import org.superbiz.moviefun.albums.AlbumsUpdateMessageConsumer;
 @Configuration
 public class RabbitConfig {
 
-    @Value("${rabbitmq.queue}") String rabbitMqQueue;
     @Value("${rabbitmq.uri}") String rabbitMqUri;
-
-    @Bean
-    public IntegrationFlow amqpInbound(ConnectionFactory connectionFactory, AlbumsUpdateMessageConsumer consumer) {
-        return IntegrationFlows
-            .from(Amqp.inboundAdapter(connectionFactory, rabbitMqQueue))
-            .handle(consumer::consume)
-            .get();
-    }
 
     @Bean
     public ConnectionFactory connectionFactory() {
         CachingConnectionFactory factory = new CachingConnectionFactory();
         factory.setUri(rabbitMqUri);
         return factory;
+    }
+
+    @Value("${rabbitmq.queue}") String rabbitMqQueue;
+
+    @Bean
+    public IntegrationFlow amqpInbound(ConnectionFactory connectionFactory, AlbumsUpdateMessageConsumer consumer) {
+        return IntegrationFlows
+                .from(Amqp.inboundAdapter(connectionFactory, rabbitMqQueue))
+                .handle(consumer::consume)
+                .get();
     }
 }
